@@ -3,6 +3,7 @@ package com.movieapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,8 @@ public class signup_screen extends AppCompatActivity {
     TextView regPassConfirm;
     Button signUpBtn;
     private FirebaseAuth mAuth;
+    private ProgressDialog loadingBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,22 +54,33 @@ public class signup_screen extends AppCompatActivity {
             String email = regEmail.getText().toString();
             String password = regPass.getText().toString();
             String passwordConfirm = regPassConfirm.getText().toString();
-            if(password.equals(passwordConfirm)){
-                mAuth.createUserWithEmailAndPassword(email,password )
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
 
-                                    Intent userInfo = new Intent(signup_screen.this, userInfo.class);
-                                    startActivity(userInfo);
+            if(email.matches("")&& password.matches("") && passwordConfirm.matches("")){
+                Toast.makeText(signup_screen.this,"You must enter email , password and comfirm your password",Toast.LENGTH_SHORT).show();
+            }
+            else{  loadingBar.setTitle("Checking");
+                loadingBar.setMessage("Please wait a few seconds");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
+                if(password.equals(passwordConfirm)){
+                    mAuth.createUserWithEmailAndPassword(email,password )
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        loadingBar.hide();
+                                        Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+
+                                        Intent userInfo = new Intent(signup_screen.this, userInfo.class);
+                                        startActivity(userInfo);
+                                    }
+                                    else {
+                                        loadingBar.hide();
+                                        Toast.makeText(getApplicationContext(), "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
+                                    }
                                 }
-                                else {
-                                    Toast.makeText(getApplicationContext(), "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
+                            });}
+
             }
 
         }
