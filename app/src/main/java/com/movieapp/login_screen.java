@@ -72,6 +72,7 @@ public class login_screen extends AppCompatActivity  {
                                             Toast.LENGTH_SHORT).show();
 //                                FirebaseUser user = mAuth.getCurrentUser();
                                     Intent userInfo = new Intent(login_screen.this, userInfo.class);
+                                    userInfo.putExtra("password", password);
                                     startActivity(userInfo);
                                 } else {
                                     // If sign in fails, display a message to the user.
